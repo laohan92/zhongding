@@ -1,0 +1,411 @@
+/******************* 变量 start ********************/
+@fs: 100rem;
+/******************** 变量 end ********************/
+
+/******************** 清除默认样式 start ********************/
+html,
+body {
+  width: 100%;
+  height: 100%;
+}
+html,
+body,
+h1,
+h2,
+h3,
+h4,
+input,
+p,
+img,
+ul,
+li,
+dl,
+dt,
+dd,
+textarea {
+  margin: 0;
+  padding: 0;
+  font-family: "Microsoft YaHei";
+}
+body {
+  font-size: 30 / @fs;
+}
+ul,
+li {
+  list-style: none;
+}
+a {
+  text-decoration: none;
+}
+input,
+textarea {
+  outline: none;
+  box-sizing: border-box;
+}
+textarea {
+  resize: none;
+}
+/******************** 清除默认样式 end ********************/
+
+/******************** 公用样式 start ********************/
+.page-body {
+  padding: 98 / @fs 0 20 / @fs;
+  width: 100%;
+  min-height: 100%;
+  background: #f5f5f5;
+  box-sizing: border-box;
+  font-size: 28 / @fs;
+  color: #666;
+}
+.mt16 {
+  margin-top: 16 / @fs;
+}
+.mt25 {
+  margin-top: 25 / @fs;
+}
+.mt33 {
+  margin-top: 33 / @fs;
+}
+.mt40 {
+  margin-top: 40 / @fs;
+}
+.mt64 {
+  margin-top: 64 / @fs;
+}
+.mr32 {
+  margin-right: 32 / @fs;
+}
+.fw600 {
+  font-weight: 600;
+}
+.w230 {
+  width: 230 / @fs;
+}
+.w420 {
+  width: 420 / @fs;
+}
+.w670 {
+  width: 670 / @fs;
+}
+.inline-block {
+  display: inline-block;
+}
+.f-left {
+  float: left;
+}
+.f-right {
+  float: right;
+}
+.down-arrow {
+  display: block;
+  position: absolute;
+  top: 50%;
+  right: 30 / @fs;
+  margin-top: -11.5 / @fs;
+  width: 38 / @fs;
+  height: 23 / @fs;
+  background: url("../images/completeInfo/arrow.png") no-repeat;
+  background-size: 100%;
+}
+// 清除浮动
+.clear {
+  zoom: 1;
+}
+.clear:after {
+  display: block;
+  content: "";
+  clear: both;
+}
+// 取消 || 驳回原因
+.c-text {
+  word-wrap: break-word;
+  word-break: normal;
+}
+// 底部填充块
+.b-padding {
+  width: 100%;
+  height: 40 / @fs;
+  background: #f5f5f5;
+}
+.vux-popup-picker-header {
+  color: #ff7201 !important;
+}
+// 施工图标
+.construction {
+  padding-top: 200 / @fs;
+  .icon {
+    display: block;
+    margin: 0 auto;
+    width: 305 / @fs;
+  }
+  .text {
+    margin-top: 20 / @fs;
+    text-align: center;
+    font-size: 28 / @fs;
+    color: #2b2b2b;
+    font-weight: 600;
+  }
+}
+// 查公证处
+.location-list {
+  padding-top: 20 / @fs;
+  margin: 0 auto;
+  width: 690 / @fs;
+  border-radius: 10 / @fs;
+  overflow: hidden;
+  li {
+    float: left;
+    width: 230 / @fs;
+    height: 216 / @fs;
+    background: #fff;
+    text-align: center;
+    box-sizing: border-box;
+    border-bottom: 1px solid #d3d3d3;
+    border-right: 1px solid #d3d3d3;
+    img {
+      display: inline-block;
+      vertical-align: middle;
+      position: relative;
+      top: -6 / @fs;
+      height: 35 / @fs;
+      margin-right: 20 / @fs;
+    }
+    span {
+      font-size: 36 / @fs;
+      color: #333;
+      line-height: 216 / @fs;
+    }
+  }
+  li:nth-child(3n) {
+    border-right: none;
+  }
+}
+.pswp--supports-fs .pswp__button--fs {
+  display: none !important;
+}
+/******************** 公用样式 end ********************/
+
+/******************** form表单样式 start ********************/
+.form {
+  padding-top: 44 / @fs;
+  margin: 0 auto;
+  width: 670 / @fs;
+}
+// 输入框样式
+.f-item {
+  input {
+    display: block;
+    outline: none;
+    box-sizing: border-box;
+    padding-left: 20 / @fs;
+    border: none;
+    width: 100%;
+    height: 94 / @fs;
+    border-radius: 6 / @fs;
+    background: #f5f5f5;
+    font-size: 32 / @fs;
+  }
+}
+// 手机输入框
+.phone {
+  input {
+    width: 100%;
+  }
+}
+// 图形验证码
+.imgCode {
+  position: relative;
+  input {
+    width: 430 / @fs;
+  }
+  .img-btn {
+    position: absolute;
+    right: 0;
+    top: 50%;
+    margin-top: -40 / @fs;
+    width: 216 / @fs;
+    height: 80 / @fs;
+    background: #c8c8c8;
+  }
+}
+// 短信验证码
+.smsCode {
+  position: relative;
+  input {
+    width: 430 / @fs;
+  }
+  .sms-btn {
+    position: absolute;
+    right: 0;
+    top: 50%;
+    margin-top: -40 / @fs;
+    width: 216 / @fs;
+    height: 80 / @fs;
+    border: 1px #ff7201 solid;
+    border-radius: 6 / @fs;
+    font-size: 34 / @fs;
+    color: #ff7201;
+    text-align: center;
+    line-height: 80 / @fs;
+  }
+}
+// 错误提示
+.error-text {
+  width: 100%;
+  margin-top: 20 / @fs;
+  height: 40 / @fs;
+  font-size: 28 / @fs;
+  color: #ff7201;
+  text-align: center;
+  line-height: 40 / @fs;
+}
+// 登录按钮
+.submit {
+  margin: 20 / @fs auto 0;
+  width: 670 / @fs;
+  height: 96 / @fs;
+  background: #ff7201;
+  border-radius: 6 / @fs;
+  font-size: 34 / @fs;
+  color: #fff;
+  line-height: 96 / @fs;
+  text-align: center;
+}
+// 去注册
+.to-register {
+  display: block;
+  margin-top: 35 / @fs;
+  font-size: 28 / @fs;
+  color: #999;
+  line-height: 40 / @fs;
+  text-align: right;
+}
+/******************** form表单样式 end *******************/
+
+/******************** 上传图片模块样式 start *******************/
+
+/******************** 上传图片模块样式 end *******************/
+.uploading {
+  position: relative;
+  margin: 40 / @fs auto 0;
+  width: 670 / @fs;
+  min-height: 324 / @fs;
+  background: #fff;
+  border-radius: 6 / @fs;
+  .text {
+    position: absolute;
+    left: 0;
+    top: 0;
+    z-index: 1;
+    padding-top: 73 / @fs;
+    width: 100%;
+    img {
+      display: block;
+      margin: 0 auto;
+      width: 89 / @fs;
+    }
+    p {
+      margin-top: 40 / @fs;
+      font-size: 34 / @fs;
+      color: #ff7201;
+      line-height: 48 / @fs;
+      text-align: center;
+    }
+  }
+  .img {
+    position: relative;
+    z-index: 2;
+    width: 100%;
+    height: 324 / @fs;
+  }
+  .file {
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: 3;
+    display: block;
+    width: 100%;
+    height: 100%;
+    opacity: 0;
+  }
+}
+/******************** 我的订单、订单详情样式 start ********************/
+@orderUrl: "../images/orderDetails";
+// 订单详情
+.order-details {
+  width: 100%;
+  background: #fff;
+}
+// 订单信息
+.order-info {
+  position: relative;
+  padding: 28 / @fs 0 0;
+  margin: 0 auto;
+  width: 670 / @fs;
+  font-size: 30 / @fs;
+  color: #333;
+  line-height: 42 / @fs;
+}
+.order-no {
+  padding-bottom: 24 / @fs;
+  height: 42 / @fs;
+  border-bottom: 1px #ececec solid;
+  .order-icon {
+    position: relative;
+    top: 3 / @fs;
+    display: inline-block;
+    margin-right: 10 / @fs;
+    width: 29 / @fs;
+    height: 30 / @fs;
+    background: url("@{orderUrl}/orderno.png") no-repeat;
+    background-size: 100%;
+  }
+}
+.order-data {
+  padding: 10 / @fs 0 30 / @fs;
+  margin: 0 auto;
+  width: 670 / @fs;
+  border-bottom: 1px #ececec solid;
+  font-size: 30 / @fs;
+  color: #333;
+  line-height: 42 / @fs;
+  li {
+    margin-top: 18 / @fs;
+    float: left;
+  }
+  .even {
+    float: right;
+  }
+}
+.order-status {
+  float: right;
+  font-size: 34 / @fs;
+  font-weight: 600;
+  line-height: 48 / @fs;
+}
+// 取消驳回原因
+.cause {
+  padding: 32 / @fs 0 55 / @fs;
+  margin: 0 auto;
+  width: 670 / @fs;
+  border-bottom: 1px solid #ececec;
+}
+.c-type {
+  font-size: 30 / @fs;
+  font-weight: 600;
+  color: #db0000;
+  line-height: 42 / @fs;
+}
+.c-title {
+  font-size: 32 / @fs;
+  font-weight: 600;
+  clor: #666;
+  line-height: 45 / @fs;
+}
+.c-text {
+  margin-top: 6 / @fs;
+  font-size: 28 / @fs;
+  color: #999;
+  line-height: 40 / @fs;
+}
+/******************** 我的订单、订单详情样式 end *******************/
