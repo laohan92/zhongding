@@ -23,6 +23,7 @@
 <script>
 import headerBar from "@/components/headerBar";
 import { toManagerCenter, logout } from "@/assets/js/api.js";
+import { delCookie } from "@/assets/js/function.js";
 
 export default {
   name: "index",
@@ -39,14 +40,14 @@ export default {
     var _this = this;
     // 初始请求个人信息
     var data = {
-      userId: g_userId
+      userId: this.GLOBAL.userId
     };
 
     toManagerCenter({
       target: _this,
       data: data,
-      success: function(ret) {
-        _this.personalInfo = ret.data;
+      success: function(res) {
+        _this.personalInfo = res.data;
       }
     });
   },
@@ -55,14 +56,14 @@ export default {
       var _this = this;
       // 初始请求订单信息
       var data = {
-        openId: g_openId,
-        userId: g_userId
+        userId: this.GLOBAL.userId
       };
 
       logout({
         target: _this,
         data: data,
-        success: function(ret) {
+        success: function(res) {
+          delCookie("jacUserId");
           _this.$router.push("/login");
         }
       });

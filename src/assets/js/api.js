@@ -1,4 +1,5 @@
-let REQUEST_URL = window.location.origin + "/zrhyApp/o"; // 请求接口
+// let REQUEST_URL = window.location.origin + "/zrhyApp/o"; // 请求接口
+let REQUEST_URL = "http://192.168.200.54:8989/lendApp/o"; // 请求接口
 
 const ajax = function(url, opt) {
   var url = REQUEST_URL + url || "";
@@ -11,6 +12,7 @@ const ajax = function(url, opt) {
   var error = opt.error || function() {};
   var complete = opt.complete || function() {};
   var target = opt.target || Object;
+  var isToast = opt.isToast === false ? false : true;
 
   target.$vux.loading.show({
     text: "Loading"
@@ -20,19 +22,21 @@ const ajax = function(url, opt) {
     type: type,
     dataType: dataType,
     data: data,
-    success: function(ret) {
-      if (res.status == "0000") {
-        success && success();
-      } else {
-        target.$vux.toast.show({
-          text: ret.message,
-          type: "warn",
-          time: "1500"
-        });
-        fail && fail();
-      }
+    success: function(res) {
       // 隐藏
       target.$vux.loading.hide();
+      if (res.status == "0000") {
+        success && success(res);
+      } else {
+        if (isToast) {
+          target.$vux.toast.show({
+            text: res.message,
+            type: "warn",
+            time: "1500"
+          });
+        }
+        fail && fail();
+      }
     },
     error: function() {
       // 网络错误
@@ -45,6 +49,7 @@ const ajax = function(url, opt) {
       error && error();
     },
     complete: function() {
+      target.$vux.loading.hide();
       complete && complete();
     }
   });

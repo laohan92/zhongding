@@ -3,7 +3,7 @@
     <!-- 标题栏 -->
     <header-bar :header="header"></header-bar>
     <div class="wrapper" ref="wrapper">
-      <div class="content" style="min-height:100.1%;">
+      <div class="content">
         <!-- 顶部提示信息 -->
         <div class="top-tip">
           <span class="refresh-hook" v-html="loadText">下拉刷新</span>
@@ -39,28 +39,25 @@
                 </div>
                 <!-- 房屋估值 -->
                 <ul class="order-data clear">
-                  <template v-if="['4','6','8','9','15','21','61'].indexOf(item.status) != -1">
-                    <li>房屋估值：{{item.orderTotalAmount}}万元</li>
-                    <li class="even" v-if="['61'].indexOf(item.status) != -1">初评可贷：{{item.primaryLoanAmount}}万元</li>
-                    <li class="even" v-else>最高可贷：{{item.primaryLoanAmount}}万元</li>
-                  </template>
+                  <li v-if="item.houseTotalAmount">房屋估值：{{item.houseTotalAmount}}万元</li>
+                  <li class="even" v-if="item.loanAmountText && item.loanAmount">{{ item.loanAmountText }}：{{item.loanAmount}}万元</li>
                   <li style="width:100%;">初审员：{{item.orderReviewUserName}}&nbsp;&nbsp;{{item.userPhone}}</li>
-                  <li v-if="['61'].indexOf(item.status) != -1" style="font-size:0.2rem;color:#666;">* 初评结果仅做参考，以下户后，业务决策可贷金额为准。</li>
+                  <li class="tips" v-if="orderStatus.fn(item.status) === 'wait'">* 初评结果仅做参考，以下户后，业务决策可贷金额为准。</li>
                 </ul>
                 <!-- 房屋信息 -->
-                <ul class="order-data clear" v-if=" ['62','1','2','4','6','8','9','64','3','5','7'].indexOf(item.status) != -1">
+                <ul class="order-data clear" v-if="!(orderStatus.fn(item.status) === ('noValuation' || 'wait' || 'cancel'))">
                   <li>建筑面积：{{item.pawnArea}}平方</li>
                   <li class="even">借款人：{{item.mortgagorName}}</li>
                   <li style="width:100%;">具体地址：{{item.pawnAddress}}</li>
                 </ul>
                 <!-- 驳回、取消原因 -->
-                <div class="cause" v-if="item.status == '63'">
+                <div class="cause" v-if="orderStatus.fn(item.status) === 'cancel'">
                   <dl>
                     <dt class="c-title">取消原因</dt>
                     <dd class="c-text" v-html="item.cancelReason"></dd>
                   </dl>
                 </div>
-                <div class="cause" v-else-if="['64','14','3','5','7'].indexOf(item.status) != -1">
+                <div class="cause" v-else-if="orderStatus.fn(item.status) === 'reject'">
                   <dl>
                     <dt class="c-title">驳回原因</dt>
                     <dd class="c-text" v-html="item.rejectReason"></dd>
@@ -69,12 +66,12 @@
               </router-link>
               <!-- 按钮组 -->
               <div v-if="item.createUserId == userid">
-                <div class="btns clear" v-if="item.status == '61'">
+                <div class="btns clear" v-if="orderStatus.fn(item.status) === 'wait'">
                   <router-link class="btn btn1" :to="{path:'/completeInfo',query:{orderId:item.orderId}}">合作,去完善信息</router-link>
                   <router-link class="btn btn2" :to="{path:'/cancelOrder',query:{orderId:item.orderId}}">取消订单</router-link>
                 </div>
-                <div class="btns clear" v-else-if=" (['64','3','5','7','16','20'].indexOf(item.status) != -1 && item.rejectType == '1')">
-                  <router-link class="btn btn1" style="display:block;margin:0 auto;float:none;" :to="{path:'/completeInfo',query:{orderId:item.orderId}}">修改重新提交</router-link>
+                <div class="btns clear" v-else-if=" (orderStatus.fn(item.status) === 'reject' && item.rejectType == '1')">
+                  <router-link class="btn btn1 resubmit" :to="{path:'/completeInfo',query:{orderId:item.orderId}}">修改重新提交</router-link>
                 </div>
               </div>
             </div>
@@ -103,13 +100,13 @@ export default {
       // 分页相关
       pageNumber: "1",
       pageSize: "10",
-      // total:'3',
       loadMoreText: "点击加载更多>>",
       // 订单数据
       userid: "",
       usertype: "",
       orderData: [],
-      loadText: "下拉刷新"
+      loadText: "下拉刷新",
+      scroll: Object
     };
   },
   created: function() {
@@ -120,7 +117,7 @@ export default {
     var data = {
       pageNumber: this.pageNumber,
       pageSize: this.pageSize,
-      userId: g_userId
+      userId: this.GLOBAL.userId
     };
 
     this.getList(data, function(rows) {
@@ -141,7 +138,7 @@ export default {
       var data = {
         pageNumber: this.pageNumber,
         pageSize: this.pageSize,
-        userId: g_userId
+        userId: this.GLOBAL.userId
       };
 
       this.getList(data, function(rows) {
@@ -163,26 +160,26 @@ export default {
       orderlist({
         target: _this,
         data: data,
-        success: function(ret) {
+        success: function(res) {
           _this.userid = res.userid;
           _this.usertype = res.usertype;
           cb && cb(res.rows);
           _this.isLast(res.rows);
         },
         complete: function() {
-          scroll.finishPullDown();
+          _this.scroll.finishPullDown();
         }
       });
     },
     // 下拉刷新
     initScroll: function() {
       var _this = this;
-      var scroll = new BScroll(this.$refs.wrapper, {
+      this.scroll = new BScroll(this.$refs.wrapper, {
         click: true,
         pullDownRefresh: true
       });
       // 滑动中
-      scroll.on("scroll", function(position) {
+      this.scroll.on("scroll", function(position) {
         if (position.y > 30) {
           _this.loadText = "释放立即刷新";
         } else {
@@ -190,18 +187,18 @@ export default {
         }
       });
       // 滑动结束
-      scroll.on("touchEnd", function(position) {
+      this.scroll.on("touchEnd", function(position) {
         if (position.y > 30) {
           _this.pageNumber = "1";
           var data = {
             pageNumber: _this.pageNumber,
             pageSize: _this.pageSize,
-            userId: g_userId
+            userId: _this.GLOBAL.userId
           };
 
           _this.getList(data, function(rows) {
             _this.orderData = rows;
-            scroll.finishPullDown();
+            _this.scroll.finishPullDown();
           });
         }
       });
@@ -221,6 +218,10 @@ export default {
   padding-bottom: 140 / @fs;
   .order-list {
     padding-top: 20 / @fs;
+    .tips {
+      font-size: 20 / @fs;
+      color: #666;
+    }
   }
   // 按钮组
   .btns {
@@ -244,6 +245,11 @@ export default {
       margin-right: 48 / @fs;
       width: 200 / @fs;
     }
+    .resubmit {
+      display: block;
+      margin: 0 auto;
+      float: none;
+    }
   }
   .c-title {
     font-size: 30 / @fs;
@@ -264,6 +270,9 @@ export default {
     left: 0;
     right: 0;
     bottom: 140 / @fs;
+    .content {
+      min-height: 100.1%;
+    }
   }
   .top-tip {
     width: 100%;

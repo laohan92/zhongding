@@ -19,7 +19,7 @@ import Procedures from "@/page/procedures"; // 查手续
 import QuickPrice from "@/page/quickPrice"; // 查快出价
 
 // 引入公共方法
-import { setCookie, getCookie, delCookie } from "../assets/js/function.js";
+import { getCookie } from "@/assets/js/function.js";
 
 Vue.use(Router);
 
@@ -108,7 +108,14 @@ const router = new Router({
 
 // 路由拦截当cookie内无userId时跳转至登录页面
 router.beforeEach((to, from, next) => {
-  let userId = getCookie("userId") || "";
+  let userId = getCookie("jacUserId") || "";
+  // 页面切换关闭loading
+  Vue.$vux.loading.hide();
+  Vue.$vux.toast.hide();
+  // 定义全局变量
+  Vue.prototype.GLOBAL = {
+    userId: userId
+  };
   next();
   if (!userId) {
     router.push({

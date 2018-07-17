@@ -52,7 +52,7 @@ export default {
       // 取消订单
       var data = {
         orderId: this.orderId,
-        userId: g_userId,
+        userId: this.GLOBAL.userId,
         cancelReason: encodeURI(this.cancelReason)
       };
       $.ajax({

@@ -33,3 +33,88 @@ export const setRem = function() {
   }
   document.getElementsByTagName("html")[0].style["font-size"] = s + "px";
 };
+
+export const orderStatus = {
+  arr: [
+    {
+      code: 0,
+      type: "noValuation"
+    },
+    {
+      code: 1,
+      type: "noValuation"
+    },
+    {
+      code: 2,
+      type: "wait"
+    },
+    {
+      code: 3,
+      type: "cancel"
+    },
+    {
+      code: 6,
+      type: "reject"
+    },
+    {
+      code: 7,
+      type: ""
+    },
+    {
+      code: 8,
+      type: "reject"
+    },
+    {
+      code: 9,
+      type: ""
+    },
+    {
+      code: 10,
+      type: ""
+    },
+    {
+      code: 11,
+      type: ""
+    },
+    {
+      code: 12,
+      type: "reject"
+    },
+    {
+      code: 13,
+      type: ""
+    },
+    {
+      code: 14,
+      type: ""
+    },
+    {
+      code: 15,
+      type: "reject"
+    },
+    {
+      code: 16,
+      type: ""
+    },
+    {
+      code: 17,
+      type: ""
+    },
+    {
+      code: 18,
+      type: ""
+    },
+    {
+      code: 99,
+      type: "reject"
+    }
+  ],
+  fn: function(code) {
+    let selfArr = this.arr;
+    for (let i = 0; i < selfArr.length; i++) {
+      if (selfArr[i].code == code) {
+        return selfArr[i].type;
+      }
+    }
+  }
+};

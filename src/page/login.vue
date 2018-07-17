@@ -93,17 +93,16 @@ export default {
         msgCode: this.formData.msgCode
       };
 
-      // login({
-      //   target: _this,
-      //   data: data,
-      //   success: function(res) {
-      //     // 登录成功记录userid
-      //     _this.$router.push("/index");
-      //   }
-      // });
+      login({
+        target: _this,
+        data: data,
+        success: function(res) {
+          // 登录成功记录userid
+          setCookie("jacUserId", res.data.userId);
+          _this.$router.push("/home");
+        }
+      });
       // 模拟登录成功
-      setCookie("userId", "pengdong");
-      _this.$router.push("/home");
     },
     // 倒计时
     countDown: function() {

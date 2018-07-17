@@ -34,10 +34,3 @@ export default {
   }
 };
 </script>
-
-<style lang="less">
-@fs: 100rem;
-#architecture {
-  padding-bottom: 50 / @fs;
-}
-</style>

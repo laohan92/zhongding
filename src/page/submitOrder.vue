@@ -12,7 +12,7 @@
           </div>
           <img class="img" v-if="upImg != ''" :src="upImg" alt="上传图片">
           <input class="file" type="file" name="filePic" @change="upload">
-          <input style="display:none;" type="text" name="userId">
+          <input style="display:none;" type="text" name="userId" :value="userId">
         </div>
         <!-- 房主姓名 -->
         <div class="houseOwner">
@@ -53,7 +53,8 @@ export default {
         isBack: true
       },
       upImg: "",
-      requestUrl: this.GLOBAL.requestUrl,
+      userId: "",
+      requestUrl: requestUrl,
       // 城市数据
       cityData: cityData,
       sCity: {
@@ -152,6 +153,9 @@ export default {
       this.sCity.pawnProvince = e[0] || "";
       this.sCity.pawnCounty = e[1] || "";
     }
+  },
+  mounted: function() {
+    this.userId = this.GLOBAL.userId;
   },
   components: {
     headerBar,

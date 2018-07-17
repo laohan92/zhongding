@@ -34,10 +34,3 @@ export default {
   }
 };
 </script>
-
-<style lang="less">
-@fs: 100rem;
-#credit {
-  padding-bottom: 40 / @fs;
-}
-</style>

@@ -132,7 +132,7 @@
       <div class="main">
         <div class="header">提交成功</div>
         <div class="content">
-          <img style="display:block;margin:0 auto;width:1.56rem;" src="../assets/images/completeInfo/success.png">
+          <img src="../assets/images/completeInfo/success.png">
         </div>
         <div class="footer" @click="backMyOrder">确定</div>
       </div>
@@ -146,7 +146,8 @@ import PopupPicker from "vux/src/components/popup-picker";
 import {
   selectOrderInfo,
   chackOrderByPrNo,
-  selectRefuseCount
+  selectRefuseCount,
+  requestUrl
 } from "@/assets/js/api.js";
 import {
   cityData,
@@ -167,7 +168,7 @@ export default {
         title: "完善信息",
         isBack: true
       },
-      requestUrl: this.GLOBAL.requestUrl,
+      requestUrl: requestUrl,
       // 城市数据
       cityData: cityData,
       // 抵押类型
@@ -338,17 +339,18 @@ export default {
       }
 
       // 只有初次完善信息才查询是否存在驳回
-      if (this.orderData.status == "61") {
+      if (this.orderData.status == "2") {
         // 再校验是否存在驳回
         var data = {
-          cardId: this.orderData.mortgagorCard
+          cardId: this.orderData.mortgagorCard,
+          userId: this.GLOBAL.userId
         };
 
         selectRefuseCount({
           target: _this,
           data: data,
-          success: function(ret) {
-            _this.rejectList = ret.data;
+          success: function(res) {
+            _this.rejectList = res.data;
             if (_this.rejectList && _this.rejectList.length > 0) {
               _this.boxData.isShow = true;
               return;
@@ -421,29 +423,27 @@ export default {
       var _this = this;
       // 初始请求订单信息
       var data = {
-        orderId: this.orderId
+        orderId: this.orderId,
+        userId: this.GLOBAL.userId
       };
 
       selectOrderInfo({
         target: _this,
         data: data,
-        success: function(ret) {
-          var retData = ret.data;
+        success: function(res) {
+          var retData = res.data;
           _this.orderData = retData;
           _this.sCity =
             (retData.pawnProvince &&
               getCity(retData.pawnProvince, retData.pawnCounty)) ||
             ""; // 市、区名
+          _this.sType = getType(retData.pawnType);
+          _this.sPlan = getType(retData.planUse);
+          _this.sMarital = getType(retData.marriageStatus);
           _this.upImg = retData.cardImgUrl || ""; // 身份证图片
           _this.borrowerList = retData.borrower || []; // 共同借款人列表
         }
       });
-    },
-    // 设置程序选择弹窗
-    cityPicker: function(e) {
-      this.sCity = e[0] != "" ? getCity(e[0], e[1]) : "";
-      this.orderData.pawnProvince = e[0] || "";
-      this.orderData.pawnCounty = e[1] || "";
     },
     // 设置抵押类型选择弹窗
     typePicker: function(e) {
@@ -457,12 +457,12 @@ export default {
     },
     // 设置婚姻状况弹窗
     maritalPicker: function(e) {
-      this.orderData.marriageStatus = e[0];
       this.sMarital = e[0] != "" ? getMarital(e[0]) : "";
+      this.orderData.marriageStatus = e[0] || "";
     },
     // 输入框失去焦点事件
     blurFn: function(e) {
-      if (this.orderData.status != "61") {
+      if (this.orderData.status != "2") {
         return;
       }
       var _this = this;
@@ -471,17 +471,19 @@ export default {
       chackOrderByPrNo({
         target: _this,
         data: {
-          preperRightNo: preperRightNo
+          preperRightNo: preperRightNo,
+          userId: this.GLOBAL.userId
         },
-        success: function(ret) {
+        isToast: false,
+        success: function(res) {
           _this.$vux.alert.show({
             title: "提示",
             buttonText: "知道了",
             content:
               "该房产已进行了提交<br>评房申请单号：" +
-              ret.orderInfo.orderId +
+              res.orderInfo.orderId +
               "<br>初审人：" +
-              ret.orderInfo.orderReviewUserName
+              res.orderInfo.orderReviewUserName
           });
         }
       });
@@ -688,6 +690,11 @@ export default {
     }
     .content {
       padding: 70 / @fs 0;
+      img {
+        display: block;
+        margin: 0 auto;
+        width: 156 / @fs;
+      }
     }
     .footer {
       height: 90 / @fs;

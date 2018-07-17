@@ -2,8 +2,7 @@ import Vue from "vue";
 import App from "./App";
 import router from "./router";
 import { LoadingPlugin, ToastPlugin, AlertPlugin } from "vux";
-import { setRem } from "@/assets/js/function.js";
-import { requestUrl } from "@/assets/js/api.js";
+import { setRem, orderStatus } from "@/assets/js/function.js";
 
 // 引入公共less文件
 import "./assets/less/common.less";
@@ -17,10 +16,7 @@ Vue.use(AlertPlugin);
 
 Vue.config.productionTip = false;
 
-// 定义全局变量
-Vue.prototype.GLOBAL = {
-  requestUrl: requestUrl
-};
+Vue.prototype.orderStatus = orderStatus;
 
 new Vue({
   router,

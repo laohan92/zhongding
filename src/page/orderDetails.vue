@@ -32,13 +32,13 @@
         <li style="width:100%;">初审员：{{orderData.orderReviewUserName}}&nbsp;&nbsp;{{orderData.userPhone}}</li>
       </ul>
       <!-- 驳回、取消原因 -->
-      <div class="cause" v-if="orderData.status == '63'">
+      <div class="cause" v-if="orderStatus.fn(orderData.status) === 'cancel'">
         <dl>
           <dt class="c-title">取消原因</dt>
           <dd class="c-text" v-html="orderData.cancelReason"></dd>
         </dl>
       </div>
-      <div class="cause" v-else-if=" ['64','14','3','5','7'].indexOf(orderData.status) != -1 ">
+      <div class="cause" v-else-if="orderStatus.fn(orderData.status) === 'reject'">
         <dl>
           <dt class="c-title">驳回原因</dt>
           <dd class="c-text" v-html="orderData.rejectReason"></dd>
@@ -48,11 +48,11 @@
       <div class="house-info">
         <p class="name">房产证</p>
         <div class="photograph">
-          <img class="previewer-demo-img" style="display:block;width:100%;" :src="orderData.propertyImgUrl" @click="show(0)" alt="房产证图片">
+          <img class="previewer-demo-img" :src="orderData.propertyImgUrl" @click="show(0)" alt="房产证图片">
         </div>
-        <p v-if="orderData.housingEstate" style="margin:0.4rem 0;font-size:0.28rem;color:#999;">小区名称：{{orderData.housingEstate}}</p>
+        <p class="housingEstate" v-if="orderData.housingEstate">小区名称：{{orderData.housingEstate}}</p>
         <!-- 展示房产证详细信息 -->
-        <ul class="info-list" v-if=" ['62','1','2','4','6','8','9','64','3','5','7'].indexOf(orderData.status) != -1">
+        <ul class="info-list" v-if=" !(orderStatus.fn(orderData.status) === ('noValuation' || 'wait' || 'cancel') )">
           <li>产权证编号：{{orderData.preperRightNo}}</li>
           <li class="mt40">抵押物位置：{{getCity(orderData.pawnProvince,orderData.pawnCounty)}}</li>
           <li class="mt40">具体地址：{{orderData.pawnAddress}}</li>
@@ -61,22 +61,19 @@
           <li class="mt40">借款人：{{orderData.mortgagorName}}</li>
           <li class="mt40" v-for="b in orderData.borrower">共同借款人：{{b.mortgagorNamePub}}&nbsp;&nbsp;{{b.mortgagorPhonePub}}</li>
           <li class="mt40">客户想贷：{{orderData.actualLoanAmount}}万元</li>
-          <template v-if="['4','6','8','9','15','21','61'].indexOf(orderData.status) != -1">
-            <li class="mt40">房屋估值：{{orderData.orderTotalAmount}}万元</li>
-            <li class="mt40" v-if="['61'].indexOf(orderData.status) != -1">初评可贷：{{orderData.primaryLoanAmount}}万元</li>
-            <li class="mt40" v-else>最高可贷：{{orderData.primaryLoanAmount}}万元</li>
-          </template>
-          <li v-if="['61'].indexOf(orderData.status) != -1" style="font-size:0.2rem;color:#666;">* 初评结果仅做参考，以下户后，业务决策可贷金额为准。</li>
+          <li class="mt40" v-if="orderData.houseTotalAmount">房屋估值：{{orderData.houseTotalAmount}}万元</li>
+          <li class="even mt40" v-if=" orderData.loanAmountText && orderData.loanAmount">{{ orderData.loanAmountText }}：{{orderData.loanAmount}}万元</li>
+          <li class="tips" v-if="orderStatus.fn(orderData.status) === 'wait'">* 初评结果仅做参考，以下户后，业务决策可贷金额为准。</li>
         </ul>
       </div>
       <!-- 按钮组 -->
       <div v-if="orderData.createUserId == userid">
-        <div class="btns clear" v-if="orderData.status == '61'">
+        <div class="btns clear" v-if="orderStatus.fn(orderData.status) === 'wait'">
           <router-link class="btn l-btn" :to="{path:'/cancelOrder',query:{orderId:orderData.orderId}}">取消订单</router-link>
           <router-link class="btn" :to="{path:'/completeInfo',query:{orderId:orderData.orderId}}">合作,去完善信息</router-link>
         </div>
-        <div class="btns clear" v-else-if=" (['64','3','5','7','16','20'].indexOf(orderData.status) != -1 && orderData.rejectType == '1')">
-          <router-link class="btn btn1" style="display:block;margin:0 auto;float:none;" :to="{path:'/completeInfo',query:{orderId:orderData.orderId}}">修改重新提交</router-link>
+        <div class="btns clear" v-else-if=" (orderStatus.fn(orderData.status) === 'reject' && orderData.rejectType == '1')">
+          <router-link class="btn btn1 resubmit" :to="{path:'/completeInfo',query:{orderId:orderData.orderId}}">修改重新提交</router-link>
         </div>
       </div>
     </div>
@@ -135,17 +132,17 @@ export default {
       this.orderId = this.$route.query.orderId;
       var data = {
         orderId: this.orderId,
-        userId: g_userId
+        userId: this.GLOBAL.userId
       };
 
       selectOrderInfo({
         target: _this,
         data: data,
-        success: function(ret) {
-          _this.userid = ret.userid;
-          _this.usertype = ret.usertype;
-          _this.orderData = ret.data;
-          _this.previewerList.splice(0, 1, { src: ret.data.propertyImgUrl });
+        success: function(res) {
+          _this.userid = res.userid;
+          _this.usertype = res.usertype;
+          _this.orderData = res.data;
+          _this.previewerList.splice(0, 1, { src: res.data.propertyImgUrl });
         }
       });
     }
@@ -172,7 +169,7 @@ export default {
   }
   // 房产证信息
   .house-info {
-    padding: 34 / @fs 0;
+    padding: 34 / @fs 0 60 / @fs;
     margin: 0 auto;
     width: 670 / @fs;
     .name {
@@ -186,14 +183,27 @@ export default {
       width: 100%;
       height: auto;
       background: #d8d8d8;
+      img {
+        display: block;
+        width: 100%;
+      }
+    }
+    .housingEstate {
+      margin: 40 / @fs 0 0;
+      font-size: 28 / @fs;
+      line-height: 40 / @fs;
+      color: #999;
     }
   }
   .info-list {
-    padding-bottom: 60 / @fs;
-    margin-top: 34 / @fs;
+    margin-top: 40 / @fs;
     font-size: 28 / @fs;
     color: #999;
     line-height: 40 / @fs;
+    .tips {
+      font-size: 20 / @fs;
+      color: #666;
+    }
   }
   // 按钮组
   .btns {
@@ -215,6 +225,11 @@ export default {
     }
     .l-btn {
       border-right: 1px #ebebeb solid;
+    }
+    .resubmit {
+      display: block;
+      margin: 0 auto;
+      float: none;
     }
   }
   .b-padding {
